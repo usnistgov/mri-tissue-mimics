@@ -1,0 +1,2 @@
+t1__s,t2__s,target_field__t,t1_model_file,t2_model_file
+0.439,0.078,0.55,examples/configs/white_matter_t1.csv,examples/configs/white_matter_t2.csv

@@ -1,0 +1,3 @@
+agarose_concentration__wv,salt_concentration__mM,t1__s,t2__s,target_t1__s,target_t2__s,t1_model_file,t2_model_file
+0.0,0.522,0.203,0.044,0.203,0.086,examples/configs/manganese_agarose_t1_0p55.csv,examples/configs/manganese_agarose_t2_0p55.csv
+0.0,0.263,0.376,0.086,0.203,0.086,examples/configs/manganese_agarose_t1_0p55.csv,examples/configs/manganese_agarose_t2_0p55.csv

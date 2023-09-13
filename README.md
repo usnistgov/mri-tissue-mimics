@@ -1,152 +1,172 @@
-# NIST Open-Source Software Repository Template
+# MRI Tissue Mimics
 
-Use of GitHub by NIST employees for government work is subject to
-the [Rules of Behavior for GitHub][gh-rob]. This is the
-recommended template for NIST employees, since it contains
-required files with approved text. For details, please consult
-the Office of Data & Informatics' [Quickstart Guide to GitHub at
-NIST][gh-odi].
+This repository is used to aid in finding MRI tissue relaxation times for a target field strength, and to provide functionality to solve for tissue mimic composition given target tissue relaxation times.
 
-Please click on the green **Use this template** button above to
-create a new repository under the [usnistgov][gh-nst]
-organization for your own open-source work. Please do not "fork"
-the repository directly, and do not create the templated
-repository under your individual account.
+## 0. Setup, Requirements, and Command Line Calls
 
-The key files contained in this repository -- which will also
-appear in templated copies -- are listed below, with some things
-to know about each.
+The `requirements.txt` file has the required packages that need to be installed to run the code in this repository. 
 
----
+The recommended way to setup the requirements for this repository is to create a virtual environment, and to install the required packages there. The user may choose to use their package manager and interface of choice.
 
-## README
+One way to create and manage virtual environments is to use 
+[Conda](https://conda.io/projects/conda/en/latest/index.html#), a package management system that runs on Windows, macOS, and Linux. You can follow the installation guide to install Conda
+ [here](https://conda.io/projects/conda/en/latest/user-guide/install/index.html).
 
-Each repository will contain a plain-text [README file][wk-rdm],
-preferably formatted using [GitHub-flavored Markdown][gh-mdn] and
-named `README.md` (this file) or `README`.
+Once Conda is installed, you can create a Python virtual environment called `myenv` (choose any name of your liking), activate the environment, and install the required packages into the environment by executing these commands in the terminal (for macOS) or in the command line (for Windows):
+```
+conda create --name myenv python
+conda activate myenv
+pip install -r requirements.txt
+```
 
-Per the [GitHub ROB][gh-rob] and [NIST Suborder 1801.02][nist-s-1801-02],
-your README should contain:
+You are now set up to run the rest of the commands in this README. Remember, in order to run any of the commands below in the terminal/command line, you must first activate 
+your visrtual environment. If using conda, this amounts to running: `conda activate myenv`. When finished executing code, you can exit the conda environment
+using `conda deactivate`.
 
-1. Software or Data description
-   - Statements of purpose and maturity
-   - Description of the repository contents
-   - Technical installation instructions, including operating
-     system or software dependencies
-1. Contact information
-   - PI name, NIST OU, Division, and Group names
-   - Contact email address at NIST
-   - Details of mailing lists, chatrooms, and discussion forums,
-     where applicable
-1. Related Material
-   - URL for associated project on the NIST website or other Department
-     of Commerce page, if available
-   - References to user guides if stored outside of GitHub
-1. Directions on appropriate citation with example text
-1. References to any included non-public domain software modules,
-   and additional license language if needed, *e.g.* [BSD][li-bsd],
-   [GPL][li-gpl], or [MIT][li-mit]
+## 1. Get Tissue Relaxation Times
+The `get_relaxation_times.py` file allows users to get T1 and T2 relaxation times for a given field strength for a tissue's field-dependent model. As inputs, this function requires the target field strength (given in T), as well as names of csv files that hold the tissue dispersion model parameters. 
 
-The more detailed your README, the more likely our colleagues
-around the world are to find it through a Web search. For general
-advice on writing a helpful README, please review
-[*Making Readmes Readable*][18f-guide] from 18F and Cornell's
-[*Guide to Writing README-style Metadata*][cornell-meta].
+Example T1 and T2 csv files for white matter dispersion models are included in the `examples/configs` folder. The required parameters are: 
+```
+['n_lorentzian', 'big_a', 'numerator_0', 'numerator_1', 'numerator_2', 
+ 'tau_0', 'beta_0', 'c_0', 'tau_1', 'beta_1', 'c_1', 'tau_2', 'beta_2', 'c_2']
+```
 
-## LICENSE
+For an example command line call with an optional output file name, run:
+<details> <summary> <em> Mac OS Terminal </em> </summary>
 
-Each repository will contain a plain-text file named `LICENSE.md`
-or `LICENSE` that is phrased in compliance with the Public Access
-to NIST Research [*Copyright, Fair Use, and Licensing Statement
-for SRD, Data, and Software*][nist-open], which provides
-up-to-date official language for each category in a blue box.
+```
+python get_relaxation_times.py \
+--target-field 0.55 \
+--t1-model-file examples/configs/white_matter_t1.csv \
+--t2-model-file examples/configs/white_matter_t2.csv \
+--output-file examples/output_test_relaxation.csv
+```
+</details>
+<details> <summary> <em> Windows Powershell </em> </summary>
 
-- The version of [LICENSE.md](LICENSE.md) included in this
-  repository is approved for use.
-- Updated language on the [Licensing Statement][nist-open] page
-  supersedes the copy in this repository. You may transcribe the
-  language from the appropriate "blue box" on that page into your
-  README.
+```
+python get_relaxation_times.py `
+--target-field 0.55 `
+--t1-model-file examples/configs/white_matter_t1.csv `
+--t2-model-file examples/configs/white_matter_t2.csv `
+--output-file examples/output_test_relaxation.csv
+```
+</details>
+<details> <summary> <em> Windows Command Line </em> </summary>
 
-If your repository includes any software or data that is licensed
-by a third party, create a separate file for third-party licenses
-(`THIRD_PARTY_LICENSES.md` is recommended) and include copyright
-and licensing statements in compliance with the conditions of
-those licenses.
+```
+python get_relaxation_times.py ^
+--target-field 0.55 ^
+--t1-model-file examples/configs/white_matter_t1.csv ^
+--t2-model-file examples/configs/white_matter_t2.csv ^
+--output-file examples/output_test_relaxation.csv
+```
+</details>
 
-## CODEOWNERS
+### 1.1 Get Tissue Relaxation Times -- Function Arguments
+The function arguments for `get_relaxation_times.py.py` are:
+```
+  -h, --help            Show Help message and exit
+  --target-field TARGET_FIELD
+                        Target field strength in Tesla
+  --t1-model-file T1_MODEL_FILE
+                        CSV file containing the T1 model parameters for the tissue
+  --t2-model-file T2_MODEL_FILE
+                        CSV file containing the T2 model parameters for the tissue
+  --output-file OUTPUT_FILE
+                        (Optional) Output file to save relaxation times to
+```
 
-This template repository includes a file named
-[CODEOWNERS](CODEOWNERS), which visitors can view to discover
-which GitHub users are "in charge" of the repository. More
-crucially, GitHub uses it to assign reviewers on pull requests.
-GitHub documents the file (and how to write one) [here][gh-cdo].
+## 2. Get Mimic Composition Concentration
 
-***Please update that file*** to point to your own account or
-team, so that the [Open-Source Team][gh-ost] doesn't get spammed
-with spurious review requests. *Thanks!*
+The `get_concentrations.py` file allows users to calculate the composition (salt and agarose concentrations) for a target (T1, T2) pair, given a particular parametric salt mixing model. As inputs, this function requires the target T1 and T2 times (given in seconds), as well as names of csv files that hold the mixing model parameters for the chosen parametric salt. 
 
-## CODEMETA
+Example T1 and T2 csv files for manganese and agarose mixing models at 0.55 T are included in the `examples/configs` folder. The required model parameters are:
+```
+['dim', 'a1', 'param_ag_1', 'param_oth_1', 'param_mix_1', 'param_ag_2', 
+ 'param_oth_2', 'param_mix_2', 'param_mix_3', 'param_mix_4']
+```
 
-Project metadata is captured in `CODEMETA.yaml`, used by the NIST
-Software Portal to sort your work under the appropriate thematic
-homepage. ***Please update this file*** with the appropriate
-"theme" and "category" for your code/data/software. The Tier 1
-themes are:
+For an example command line call for target T1 and T2 times that lie within the mixing model range, run:
+<details> <summary> <em> Mac OS Terminal </em> </summary>
 
-- [Advanced communications](https://www.nist.gov/advanced-communications)
-- [Bioscience](https://www.nist.gov/bioscience)
-- [Buildings and Construction](https://www.nist.gov/buildings-construction)
-- [Chemistry](https://www.nist.gov/chemistry)
-- [Electronics](https://www.nist.gov/electronics)
-- [Energy](https://www.nist.gov/energy)
-- [Environment](https://www.nist.gov/environment)
-- [Fire](https://www.nist.gov/fire)
-- [Forensic Science](https://www.nist.gov/forensic-science)
-- [Health](https://www.nist.gov/health)
-- [Information Technology](https://www.nist.gov/information-technology)
-- [Infrastructure](https://www.nist.gov/infrastructure)
-- [Manufacturing](https://www.nist.gov/manufacturing)
-- [Materials](https://www.nist.gov/materials)
-- [Mathematics and Statistics](https://www.nist.gov/mathematics-statistics)
-- [Metrology](https://www.nist.gov/metrology)
-- [Nanotechnology](https://www.nist.gov/nanotechnology)
-- [Neutron research](https://www.nist.gov/neutron-research)
-- [Performance excellence](https://www.nist.gov/performance-excellence)
-- [Physics](https://www.nist.gov/physics)
-- [Public safety](https://www.nist.gov/public-safety)
-- [Resilience](https://www.nist.gov/resilience)
-- [Standards](https://www.nist.gov/standards)
-- [Transportation](https://www.nist.gov/transportation)
+```
+python get_concentrations.py \
+--target-t1 1.064 \
+--target-t2 0.218 \
+--t1-model-file examples/configs/manganese_agarose_t1_0p55.csv \
+--t2-model-file examples/configs/manganese_agarose_t2_0p55.csv
+```
+</details>
+<details> <summary> <em> Windows Powershell </em> </summary>
 
----
+```
+python get_concentrations.py `
+--target-t1 1.064 `
+--target-t2 0.218 `
+--t1-model-file examples/configs/manganese_agarose_t1_0p55.csv `
+--t2-model-file examples/configs/manganese_agarose_t2_0p55.csv
+```
+</details>
+<details> <summary> <em> Windows Command Line </em> </summary>
 
-[usnistgov/opensource-repo][gh-osr] is developed and maintained
-by the [opensource-team][gh-ost], principally:
+```
+python get_concentrations.py ^
+--target-t1 1.064 ^
+--target-t2 0.218 ^
+--t1-model-file examples/configs/manganese_agarose_t1_0p55.csv ^
+--t2-model-file examples/configs/manganese_agarose_t2_0p55.csv
+```
+</details>
 
-- Gretchen Greene, @GRG2
-- Yannick Congo, @faical-yannick-congo
-- Trevor Keller, @tkphd
+For an example command line call that demonstrates saving outputs to a file and uses target T1 and T2 times that lie outside of the mixing model range, run:
+<details> <summary> <em> Mac OS Terminal </em> </summary>
 
-Please reach out with questions and comments.
+```
+python get_concentrations.py \
+--target-t1 0.203 \
+--target-t2 0.086 \
+--t1-model-file examples/configs/manganese_agarose_t1_0p55.csv \
+--t2-model-file examples/configs/manganese_agarose_t2_0p55.csv \
+--output-file examples/output_test_concentrations.csv
+```
+</details>
+<details> <summary> <em> Windows Powershell </em> </summary>
 
-<!-- References -->
+```
+python get_concentrations.py `
+--target-t1 0.203 `
+--target-t2 0.086 `
+--t1-model-file examples/configs/manganese_agarose_t1_0p55.csv `
+--t2-model-file examples/configs/manganese_agarose_t2_0p55.csv `
+--output-file examples/output_test_concentrations.csv
+```
+</details>
+<details> <summary> <em> Windows Command Line </em> </summary>
 
-[18f-guide]: https://github.com/18F/open-source-guide/blob/18f-pages/pages/making-readmes-readable.md
-[cornell-meta]: https://data.research.cornell.edu/content/readme
-[gh-cdo]: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
-[gh-mdn]: https://github.github.com/gfm/
-[gh-nst]: https://github.com/usnistgov
-[gh-odi]: https://odiwiki.nist.gov/ODI/GitHub.html
-[gh-osr]: https://github.com/usnistgov/opensource-repo/
-[gh-ost]: https://github.com/orgs/usnistgov/teams/opensource-team
-[gh-rob]: https://odiwiki.nist.gov/pub/ODI/GitHub/GHROB.pdf
-[gh-tpl]: https://github.com/usnistgov/carpentries-development/discussions/3
-[li-bsd]: https://opensource.org/licenses/bsd-license
-[li-gpl]: https://opensource.org/licenses/gpl-license
-[li-mit]: https://opensource.org/licenses/mit-license
-[nist-code]: https://code.nist.gov
-[nist-disclaimer]: https://www.nist.gov/open/license
-[nist-s-1801-02]: https://inet.nist.gov/adlp/directives/review-data-intended-publication
-[nist-open]: https://www.nist.gov/open/license#software
-[wk-rdm]: https://en.wikipedia.org/wiki/README
+```
+python get_concentrations.py ^
+--target-t1 0.203 ^
+--target-t2 0.086 ^
+--t1-model-file examples/configs/manganese_agarose_t1_0p55.csv ^
+--t2-model-file examples/configs/manganese_agarose_t2_0p55.csv ^
+--output-file examples/output_test_concentrations.csv
+```
+</details>
+
+### 2.1 Get Mimic Composition Concentration -- Function Arguments
+The function arguments for `get_concentrations.py` are:
+```
+  -h, --help            Show Help message and exit
+  --target-t1 TARGET_T1
+                        Target T1 value to mimic in seconds
+  --target-t2 TARGET_T2
+                        Target T2 value to mimic in seconds
+  --t1-model-file T1_MODEL_FILE
+                        CSV file containing the T1 model parameters
+  --t2-model-file T2_MODEL_FILE
+                        CSV file containing the T2 model parameters
+  --output-file OUTPUT_FILE
+                        (Optional) Output file to save concentrations for mimic to
+```
