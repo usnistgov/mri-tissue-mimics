@@ -170,3 +170,12 @@ The function arguments for `get_concentrations.py` are:
   --output-file OUTPUT_FILE
                         (Optional) Output file to save concentrations for mimic to
 ```
+
+---
+
+This repository is developed and maintained
+by the Magnetic Imaging group, principally:
+
+- Kathryn Keenan, @katykeenan-nist
+
+Please reach out with questions and comments.
